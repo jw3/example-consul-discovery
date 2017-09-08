@@ -1,0 +1,11 @@
+template:
+  dns:
+    - 172.17.0.1
+  dns_search:
+    - service.consul
+  ports:
+    - 0:2551
+  environment:
+    SERVICE_2551_CHECK_TCP: 1
+    SERVICE_2551_CHECK_INTERVAL: 15s
+    SERVICE_2551_CHECK_TIMEOUT: 1s

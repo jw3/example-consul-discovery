@@ -1,0 +1,51 @@
+consul:
+  command: -server -bootstrap -advertise 172.17.0.1
+  image: gliderlabs/consul-server:latest
+  ports:
+    - 8400:8400
+    - 8500:8500
+    - "172.17.0.1:53:8600/udp"
+
+registrator:
+  command: -ip 172.17.0.1 consul://consul:8500
+  image: gliderlabs/registrator:latest
+  links:
+    - consul
+  volumes:
+    - /var/run/docker.sock:/tmp/docker.sock
+
+service-a:
+  extends:
+    file: template.yml
+    service: template
+  hostname: a
+  image: example-consul-service-discovery
+  environment:
+    TARGET: b
+    SERVICE_NAME: a
+    SERVICE_2551_NAME: a
+    SERVICE_2551_TAGS: foo
+
+service-b:
+  extends:
+    file: template.yml
+    service: template
+  hostname: b
+  image: example-consul-service-discovery
+  environment:
+    TARGET: c
+    SERVICE_NAME: b
+    SERVICE_2551_NAME: b
+    SERVICE_2551_TAGS: bar
+
+service-c:
+  extends:
+    file: template.yml
+    service: template
+  hostname: c
+  image: example-consul-service-discovery
+  environment:
+    TARGET: a
+    SERVICE_NAME: c
+    SERVICE_2551_NAME: c
+    SERVICE_2551_TAGS: foo,bar,baz
